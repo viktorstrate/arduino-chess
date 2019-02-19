@@ -7,8 +7,11 @@
 
 #include "ChessPiece.h"
 #include "ChessMove.h"
+#include "LinkedList.h"
 
-#define fieldToIndex(x, y) x + y*8
+#define fieldToIndex(x, y) (x) + (y*8)
+#define indexToX(index) (index) % 8
+#define indexToY(index) (index) / 8
 
 class ChessBoard
 {
@@ -26,5 +29,7 @@ public:
 
     void printBoard() const;
     void performMove(const ChessMove& move);
+    LinkedList<int> possibleMoves(int index, bool whitePlays) const;
+    bool validMove(const ChessMove& move, bool whitePlays) const;
 };
 

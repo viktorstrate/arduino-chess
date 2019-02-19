@@ -22,11 +22,11 @@ ChessMove::ChessMove(const char* code)
     x2 = toLowercase(code[3]) - 'a';
     y2 = toLowercase(code[4]) - '1';
 
-    from = static_cast<unsigned int>(fieldToIndex(x1, y1));
-    to = static_cast<unsigned int>(fieldToIndex(x2, y2));
+    from = static_cast<unsigned char>(fieldToIndex(x1, y1));
+    to = static_cast<unsigned char>(fieldToIndex(x2, y2));
 }
 
-ChessMove::ChessMove(unsigned from, unsigned to)
+ChessMove::ChessMove(int from, int to)
         : from(from), to(to)
 {}
 

@@ -15,9 +15,13 @@ struct ChessPiece
     void name(char result[14]) const;
 
     unsigned int value() const;
+    char kind() const;
     bool whiteOwns() const;
     bool empty() const;
+    bool isInvalid() const;
 
     ChessPiece();
     ChessPiece(char key);
+
+    static ChessPiece invalidPiece();
 };

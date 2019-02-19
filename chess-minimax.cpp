@@ -4,20 +4,25 @@
 
 #include "chess-minimax.h"
 
-static void evaluateMoveScore(const ChessBoard& board, ChessMove* move);
+static int evaluateMoveScore(const ChessBoard& board);
 
 ChessMove calculateMove(const ChessBoard &board, unsigned depth, ChessMove move, bool whitePlays, int alpha, int beta)
 {
     if (depth == 0)
     {
-        evaluateMoveScore(board, &move);
+        move.score = evaluateMoveScore(board);
         return move;
+    }
+
+    if (whitePlays)
+    {
+        int maxEval = -1000;
     }
 
     return {0, 0};
 }
 
-static void evaluateMoveScore(const ChessBoard& board, ChessMove* move)
+static int evaluateMoveScore(const ChessBoard& board)
 {
     int whiteScore = 0;
     int blackScore = 0;
@@ -32,5 +37,5 @@ static void evaluateMoveScore(const ChessBoard& board, ChessMove* move)
             blackScore += piece.value();
     }
 
-    move->score = whiteScore - blackScore;
+    return whiteScore - blackScore;
 }

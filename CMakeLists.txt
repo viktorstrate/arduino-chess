@@ -7,7 +7,6 @@ set(
     SOURCES
 
         main.cpp
-        logger.cpp
         ChessPiece.cpp
         ChessBoard.cpp
         ChessMove.cpp

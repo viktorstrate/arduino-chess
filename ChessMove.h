@@ -7,12 +7,12 @@
 
 struct ChessMove
 {
-    unsigned from;
-    unsigned to;
+    int from;
+    int to;
     int score;
 
     ChessMove(const char code[6]);
-    ChessMove(unsigned from, unsigned to);
+    ChessMove(int from, int to);
 
     void printMove() const;
 };

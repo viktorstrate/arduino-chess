@@ -14,14 +14,33 @@ char toLowercase(const char sign)
 {
     if (sign >= 'A' && sign <= 'Z')
     {
-        return sign + ('A'-'a');
+        return sign + ('a'-'A');
     }
 
     return sign;
 }
 
+ChessPiece::ChessPiece() : key(' ') {}
+
+ChessPiece::ChessPiece(char key) : key(key) {}
+
+ChessPiece ChessPiece::invalidPiece()
+{
+    return ChessPiece('!');
+}
+
+bool ChessPiece::isInvalid() const
+{
+    return key == '!';
+}
+
 void ChessPiece::name(char result[14]) const
 {
+    if (isInvalid())
+    {
+        strcpy(result, "INVALID PIECE");
+        return;
+    }
 
     if (whiteOwns()) {
         strcpy(result, "white ");
@@ -43,6 +62,8 @@ void ChessPiece::name(char result[14]) const
 
 unsigned int ChessPiece::value() const
 {
+    if (isInvalid()) return '!';
+
     switch (toLowercase(key))
     {
         case 'p': return 1;
@@ -66,6 +87,9 @@ bool ChessPiece::empty() const
     return key == ' ';
 }
 
-ChessPiece::ChessPiece() : key(' ') {}
+char ChessPiece::kind() const
+{
+    if (isInvalid()) return '!';
 
-ChessPiece::ChessPiece(char key) : key(key) {}
+    return toLowercase(key);
+}
