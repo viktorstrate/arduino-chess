@@ -19,10 +19,13 @@ ChessMove::ChessMove(const char* code)
     x1 = toLowercase(code[0]) - 'a';
     y1 = toLowercase(code[1]) - '1';
 
+    from = static_cast<unsigned char>(fieldToIndex(x1, y1));
+
+    if (strlen(code) == 2) return;
+
     x2 = toLowercase(code[3]) - 'a';
     y2 = toLowercase(code[4]) - '1';
 
-    from = static_cast<unsigned char>(fieldToIndex(x1, y1));
     to = static_cast<unsigned char>(fieldToIndex(x2, y2));
 }
 

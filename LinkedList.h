@@ -94,7 +94,6 @@ void LinkedList<T>::printList()
         return;
     }
 
-
     print(value);
 
     if (next == nullptr) {

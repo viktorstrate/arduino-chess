@@ -10,13 +10,10 @@ void ChessBoard::printBoard() const
 {
     const ChessPiece* piece;
 
-    for(int y = 7; y >= 0; y--)
-    {
-        if (y == 7)
-        {
+    for (int y = 7; y >= 0; y--) {
+        if (y == 7) {
             print("   ");
-            for (int x = 0; x < 8; x++)
-            {
+            for (int x = 0; x < 8; x++) {
                 char buffer[] = {
                         static_cast<char>('a' + x), ' ', '\0'
                 };
@@ -32,8 +29,7 @@ void ChessBoard::printBoard() const
             print(buffer);
         }
 
-        for(int x = 0; x < 8; x++)
-        {
+        for (int x = 0; x < 8; x++) {
             piece = &board[fieldToIndex(x, y)];
 
             char buffer[] = {
@@ -49,11 +45,9 @@ void ChessBoard::printBoard() const
             print(buffer);
         }
 
-        if (y == 0)
-        {
+        if (y == 0) {
             print("   ");
-            for (int x = 0; x < 8; x++)
-            {
+            for (int x = 0; x < 8; x++) {
                 char buffer[] = {
                         static_cast<char>('a' + x), ' ', '\0'
                 };
@@ -66,7 +60,7 @@ void ChessBoard::printBoard() const
     println("");
 }
 
-void ChessBoard::performMove(const ChessMove &move)
+void ChessBoard::performMove(const ChessMove& move)
 {
     board[move.to] = board[move.from];
     board[move.from] = ' ';
@@ -75,6 +69,8 @@ void ChessBoard::performMove(const ChessMove &move)
 LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
 {
     ChessPiece piece = board[index];
+    char kind = piece.kind();
+
     LinkedList<int> result;
 
     // You cannot move your opponents pieces
@@ -90,40 +86,48 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
         int xNew = x + xoffset;
         int yNew = y + yoffset*direction;
 
+        if ((xNew > 7 || xNew < 0) || (yNew > 7 || yNew < 0))
+            return -1;
+
         return fieldToIndex(xNew, yNew);
     };
 
     auto getPiece = [&](int xoffset, int yoffset) {
-
-        if((xoffset+x > 7 || xoffset+x < 0) && (yoffset+y > 7 || yoffset+y < 0))
+        int i = offsetIndex(xoffset, yoffset);
+        if (i < 0)
             return ChessPiece::invalidPiece();
 
-        int index = offsetIndex(xoffset, yoffset);
-
-        const ChessPiece& checkPiece = board[index];
+        const ChessPiece& checkPiece = board[i];
         return checkPiece;
     };
 
     auto oppositeOrFreePiece = [&](int xoffset, int yoffset) {
         const ChessPiece& checkPiece = getPiece(xoffset, yoffset);
-        if (checkPiece.isInvalid()) return false;
+        if (checkPiece.invalid()) return false;
         return checkPiece.empty() || checkPiece.whiteOwns() != whitePlays;
     };
 
     auto oppositePiece = [&](int xoffset, int yoffset) {
         const ChessPiece& checkPiece = getPiece(xoffset, yoffset);
-        if (checkPiece.isInvalid()) return false;
+        if (checkPiece.invalid()) return false;
         return !checkPiece.empty() && checkPiece.whiteOwns() != whitePlays;
     };
 
-    if (piece.kind() == 'p')
-    {
+    auto checkPush = [&](int xoffset, int yoffset) {
+        if (oppositeOrFreePiece(xoffset, yoffset)) {
+            result.push(offsetIndex(xoffset, yoffset));
+            if (oppositePiece(xoffset, yoffset)) return false;
+        } else return false;
+        return true;
+    };
+
+    if (kind == 'p') {
         if (oppositeOrFreePiece(0, 1))
             result.push(offsetIndex(0, 1));
 
         int startPosY = whitePlays ? 1 : 6;
 
-        if (y == startPosY && oppositeOrFreePiece(0, 2))
+        if (y == startPosY && oppositeOrFreePiece(0, 2) && getPiece(0, 1).empty())
             result.push(offsetIndex(0, 2));
 
         if (oppositePiece(1, 1))
@@ -131,6 +135,53 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
 
         if (oppositePiece(-1, 1))
             result.push(offsetIndex(-1, 1));
+
+        return result;
+    }
+
+    if (kind == 'n') {
+
+        // i = -1 and 1
+        for (int i = -1; i <= 1; i += 2) {
+            for (int j = -1; j <= 1; j += 2) {
+                checkPush(1*i, 2*j);
+                checkPush(2*j, 1*i);
+            }
+        }
+
+        return result;
+    }
+
+    bool up, down, left, right;
+    up = down = left = right = true;
+
+    bool ne, nw, se, sw;
+    ne = nw = se = sw = true;
+
+    for (int i = 1; i < 8; i++) {
+        if (up)
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) up = checkPush(0, i);
+
+        if (down)
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) down = checkPush(0, -i);
+
+        if (right)
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) right = checkPush(i, 0);
+
+        if (left)
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) left = checkPush(-i, 0);
+
+        if (ne)
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) ne = checkPush(i, i);
+
+        if (nw)
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) nw = checkPush(-i, i);
+
+        if (se)
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) se = checkPush(i, -i);
+
+        if (sw)
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) sw = checkPush(-i, -i);
     }
 
     return result;

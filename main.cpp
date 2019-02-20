@@ -39,6 +39,14 @@ void startGame()
         char buffer[12];
         fgets(buffer, 12, stdin);
 
+        if (strlen(buffer) == 3) {
+            print("Possible moves: ");
+            ChessMove move = ChessMove(buffer);
+            board.possibleMoves(move.from, whitePlays).printList();
+            println("");
+            continue;
+        }
+
         if (strncmp(buffer, "exit\n", sizeof("exit\n")) == 0) break;
 
         ChessMove move(buffer);
@@ -51,6 +59,13 @@ void startGame()
             print(name);
             print(" ");
             move.printMove();
+
+            if (!board.board[move.to].empty()) {
+                print("Taking ");
+                board.board[move.to].name(name);
+                println(name);
+            }
+
             println("");
 
             board.performMove(move);

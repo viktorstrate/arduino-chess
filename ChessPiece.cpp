@@ -29,14 +29,14 @@ ChessPiece ChessPiece::invalidPiece()
     return ChessPiece('!');
 }
 
-bool ChessPiece::isInvalid() const
+bool ChessPiece::invalid() const
 {
     return key == '!';
 }
 
 void ChessPiece::name(char result[14]) const
 {
-    if (isInvalid())
+    if (invalid())
     {
         strcpy(result, "INVALID PIECE");
         return;
@@ -62,7 +62,7 @@ void ChessPiece::name(char result[14]) const
 
 unsigned int ChessPiece::value() const
 {
-    if (isInvalid()) return '!';
+    if (invalid()) return '!';
 
     switch (toLowercase(key))
     {
@@ -89,7 +89,7 @@ bool ChessPiece::empty() const
 
 char ChessPiece::kind() const
 {
-    if (isInvalid()) return '!';
+    if (invalid()) return '!';
 
     return toLowercase(key);
 }

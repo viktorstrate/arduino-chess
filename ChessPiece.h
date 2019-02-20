@@ -18,7 +18,7 @@ struct ChessPiece
     char kind() const;
     bool whiteOwns() const;
     bool empty() const;
-    bool isInvalid() const;
+    bool invalid() const;
 
     ChessPiece();
     ChessPiece(char key);
