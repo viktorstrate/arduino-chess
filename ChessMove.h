@@ -13,6 +13,7 @@ struct ChessMove
 
     ChessMove(const char code[6]);
     ChessMove(int from, int to);
+    ChessMove(int score);
 
     void printMove() const;
 };

@@ -28,6 +28,8 @@ public:
 
     bool contains(const T& item);
 
+    bool end();
+
 private:
     bool initialized;
 };
@@ -104,4 +106,10 @@ void LinkedList<T>::printList()
     print(", ");
 
     next->printList();
+}
+
+template<typename T>
+bool LinkedList<T>::end()
+{
+    return !initialized;
 }

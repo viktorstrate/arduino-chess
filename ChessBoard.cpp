@@ -122,12 +122,12 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
     };
 
     if (kind == 'p') {
-        if (oppositeOrFreePiece(0, 1))
+        if (getPiece(0, 1).empty())
             result.push(offsetIndex(0, 1));
 
         int startPosY = whitePlays ? 1 : 6;
 
-        if (y == startPosY && oppositeOrFreePiece(0, 2) && getPiece(0, 1).empty())
+        if (y == startPosY && getPiece(0, 1).empty() && getPiece(0, 2).empty())
             result.push(offsetIndex(0, 2));
 
         if (oppositePiece(1, 1))
@@ -160,28 +160,28 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
 
     for (int i = 1; i < 8; i++) {
         if (up)
-            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) up = checkPush(0, i);
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 1)) up = checkPush(0, i);
 
         if (down)
-            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) down = checkPush(0, -i);
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 1)) down = checkPush(0, -i);
 
         if (right)
-            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) right = checkPush(i, 0);
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 1)) right = checkPush(i, 0);
 
         if (left)
-            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 0)) left = checkPush(-i, 0);
+            if (kind == 'r' || kind == 'q' || (kind == 'k' && i == 1)) left = checkPush(-i, 0);
 
         if (ne)
-            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) ne = checkPush(i, i);
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 1)) ne = checkPush(i, i);
 
         if (nw)
-            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) nw = checkPush(-i, i);
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 1)) nw = checkPush(-i, i);
 
         if (se)
-            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) se = checkPush(i, -i);
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 1)) se = checkPush(i, -i);
 
         if (sw)
-            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 0)) sw = checkPush(-i, -i);
+            if (kind == 'b' || kind == 'q' || (kind == 'k' && i == 1)) sw = checkPush(-i, -i);
     }
 
     return result;

@@ -47,3 +47,6 @@ void ChessMove::printMove() const
 
     println(buffer);
 }
+
+ChessMove::ChessMove(int score) : score(score), from(-1), to(-1)
+{}

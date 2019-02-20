@@ -16,4 +16,6 @@
  * @param beta should be set to default, used for optimization
  * @return
  */
-ChessMove calculateMove(const ChessBoard& board, unsigned depth, bool whitePlays, ChessMove move, int alpha = -1000, int beta = 1000);
+ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* steps, int alpha = -1000, int beta = 1000);
+
+int evaluateMoveScore(const ChessBoard& board);
