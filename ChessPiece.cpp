@@ -10,7 +10,7 @@
 
 #include "ChessPiece.h"
 
-char toLowercase(const char sign)
+char toLowercase(char sign)
 {
     if (sign >= 'A' && sign <= 'Z')
     {
@@ -60,7 +60,7 @@ void ChessPiece::name(char result[14]) const
     }
 }
 
-unsigned int ChessPiece::value() const
+byte ChessPiece::value() const
 {
     if (invalid()) return '!';
 

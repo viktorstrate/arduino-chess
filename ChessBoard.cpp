@@ -66,12 +66,12 @@ void ChessBoard::performMove(const ChessMove& move)
     board[move.from] = ' ';
 }
 
-LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
+LinkedList<byte> ChessBoard::possibleMoves(byte index, bool whitePlays) const
 {
     ChessPiece piece = board[index];
     char kind = piece.kind();
 
-    LinkedList<int> result;
+    LinkedList<byte> result;
 
     // You cannot move your opponents pieces
     if (piece.whiteOwns() != whitePlays)
@@ -80,11 +80,11 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
     int x = indexToX(index);
     int y = indexToY(index);
 
-    auto offsetIndex = [&](int xoffset, int yoffset) {
-        int direction = piece.whiteOwns() ? 1 : -1;
+    auto offsetIndex = [&](byte xoffset, byte yoffset) {
+        byte direction = piece.whiteOwns() ? 1 : -1;
 
-        int xNew = x + xoffset;
-        int yNew = y + yoffset*direction;
+        byte xNew = x + xoffset;
+        byte yNew = y + yoffset*direction;
 
         if ((xNew > 7 || xNew < 0) || (yNew > 7 || yNew < 0))
             return -1;
@@ -92,7 +92,7 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
         return fieldToIndex(xNew, yNew);
     };
 
-    auto getPiece = [&](int xoffset, int yoffset) {
+    auto getPiece = [&](byte xoffset, byte yoffset) {
         int i = offsetIndex(xoffset, yoffset);
         if (i < 0)
             return ChessPiece::invalidPiece();
@@ -101,19 +101,19 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
         return checkPiece;
     };
 
-    auto oppositeOrFreePiece = [&](int xoffset, int yoffset) {
+    auto oppositeOrFreePiece = [&](byte xoffset, byte yoffset) {
         const ChessPiece& checkPiece = getPiece(xoffset, yoffset);
         if (checkPiece.invalid()) return false;
         return checkPiece.empty() || checkPiece.whiteOwns() != whitePlays;
     };
 
-    auto oppositePiece = [&](int xoffset, int yoffset) {
+    auto oppositePiece = [&](byte xoffset, byte yoffset) {
         const ChessPiece& checkPiece = getPiece(xoffset, yoffset);
         if (checkPiece.invalid()) return false;
         return !checkPiece.empty() && checkPiece.whiteOwns() != whitePlays;
     };
 
-    auto checkPush = [&](int xoffset, int yoffset) {
+    auto checkPush = [&](byte xoffset, byte yoffset) {
         if (oppositeOrFreePiece(xoffset, yoffset)) {
             result.push(offsetIndex(xoffset, yoffset));
             if (oppositePiece(xoffset, yoffset)) return false;
@@ -189,7 +189,28 @@ LinkedList<int> ChessBoard::possibleMoves(int index, bool whitePlays) const
 
 bool ChessBoard::validMove(const ChessMove& move, bool whitePlays) const
 {
-    auto moves = possibleMoves(move.from, whitePlays);
+    LinkedList<byte> moves = this->possibleMoves(move.from, whitePlays);
 
     return moves.contains(move.to);
+}
+
+byte ChessBoard::gameEnded()
+{
+    bool whiteKing = false;
+    bool blackKing = false;
+
+    for (const auto& piece : this->board) {
+        if (piece.kind() == 'k') {
+            if (piece.whiteOwns())
+                whiteKing = true;
+            else
+                blackKing = true;
+        }
+    }
+
+    if (whiteKing && blackKing) return 0;
+
+    if (!whiteKing) return 1;
+
+    return 2;
 }

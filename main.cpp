@@ -8,14 +8,46 @@
 #include <stdio.h>
 #include <cstring>
 
-void startGame();
+void startGamePlayerComputer(int depth);
+void startGameComputerComputer(int depth);
 
-int main()
+int main(int argc, char** argv)
 {
     println("$== CHESS MATH ==$");
-    println("Moves are written like 'e2 e4'\n");
+    println("Moves are written like 'e2 e4'");
 
-    startGame();
+    int mode = 0;
+    int depth = 4;
+
+    for(int i = 1; i < argc; i++){
+        if (strncmp(argv[i], "-c", 3) == 0) {
+            mode = 1;
+            continue;
+        }
+
+        if (strncmp(argv[i], "-n", 3) == 0) {
+            depth = std::stoi(argv[i+1]);
+            continue;
+        }
+    }
+
+    print("Depth set to: ");
+    println(depth);
+
+    println("");
+
+    switch(mode) {
+        case 1: {
+            startGameComputerComputer(depth);
+            break;
+        }
+        default: {
+            startGamePlayerComputer(depth);
+            break;
+        }
+    }
+
+
 
     return 0;
 }
@@ -72,11 +104,12 @@ int userMove(bool& whitePlays, ChessBoard& board)
     return 0;
 }
 
-void computerMove(bool& whitePlays, ChessBoard& board)
+void computerMove(bool& whitePlays, ChessBoard& board, int depth)
 {
     println("Computer is thinking...");
     int steps = 0;
-    ChessMove computerMove = calculateMove(board, 5, whitePlays, &steps);
+    int swaps = 0;
+    ChessMove computerMove = calculateMove(board, depth, whitePlays, &steps, &swaps);
 
     print("Computer moving ");
     char name[16];
@@ -88,6 +121,8 @@ void computerMove(bool& whitePlays, ChessBoard& board)
     println(computerMove.score);
     print(" - Total minimax calls: ");
     println(steps);
+    print(" - Total minimax optimization swaps: ");
+    println(swaps);
     println("");
     if (!board.board[computerMove.to].empty()) {
         print("Taking ");
@@ -99,7 +134,7 @@ void computerMove(bool& whitePlays, ChessBoard& board)
     whitePlays = !whitePlays;
 }
 
-void startGame()
+void startGamePlayerComputer(int depth)
 {
     ChessBoard board;
     bool whitePlays = true;
@@ -112,7 +147,7 @@ void startGame()
         board.printBoard();
 
         if (!whitePlays) {
-            computerMove(whitePlays, board);
+            computerMove(whitePlays, board, depth);
             continue;
         }
 
@@ -120,6 +155,51 @@ void startGame()
         status = userMove(whitePlays, board);
         if (status == 1) continue;
         if (status == 2) break;
+
+        int endState = board.gameEnded();
+        if (endState != 0) {
+            if (endState == 1)
+                print("White");
+            else
+                print("Black");
+
+            println(" has won!");
+            break;
+        }
+    }
+}
+
+void startGameComputerComputer(int depth)
+{
+    ChessBoard board;
+    bool whitePlays = true;
+
+    int count = 0;
+
+    while (true) {
+
+        count++;
+
+        print("Move #");
+        println(count);
+
+        print("Current board score: ");
+        println(evaluateMoveScore(board));
+
+        board.printBoard();
+
+        computerMove(whitePlays, board, depth);
+
+        int endState = board.gameEnded();
+        if (endState != 0) {
+            if (endState == 1)
+                print("White");
+            else
+                print("Black");
+
+            println(" has won!");
+            break;
+        }
     }
 }
 

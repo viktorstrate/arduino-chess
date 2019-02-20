@@ -11,19 +11,52 @@ using namespace std;
 
 #include "chess-minimax.h"
 
-ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* steps, int alpha, int beta)
+ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* steps, int* swaps, int alpha, int beta)
 {
-    *steps += 1;
+    if(steps != nullptr)
+        *steps += 1;
 
     if (depth == 0) {
         ChessMove scoreMove = ChessMove(evaluateMoveScore(board));
         return scoreMove;
     }
 
+    // Sort pieces by most likely to be good choices
+    LinkedList<byte> searchOrder;
+    int swappedPieces = 0;
+
+    for (byte i = 0; i < 64; i++)
+        searchOrder.push(i);
+
+    for (byte i = 0; i < 64; i++) {
+        auto sortPieceMoves = board.possibleMoves(i, whitePlays);
+        auto* move = &sortPieceMoves;
+
+        while(!move->end())
+        {
+            const ChessPiece& piece = board.board[move->value];
+
+            if (!piece.empty() && piece.whiteOwns() != whitePlays) {
+                if (swaps != nullptr) *swaps += 1; // for statistics
+                searchOrder.swap(swappedPieces, move->value);
+                swappedPieces++;
+            }
+
+            if (move->next != nullptr) {
+                move = move->next;
+            } else break;
+        }
+
+    }
+
+    // Explore every move
+    auto* searchIndex = &searchOrder;
     ChessMove bestMove = ChessMove(whitePlays ? -10000 : 10000);
 
-    for (int i = 0; i < 64; i++) {
+    while(!searchIndex->end()) {
+        byte i = searchIndex->value;
         auto possibleMoves = board.possibleMoves(i, whitePlays);
+
         auto* move = &possibleMoves;
 
         while (!move->end()) {
@@ -31,7 +64,7 @@ ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* 
             ChessMove newMove = ChessMove(i, move->value);
             newBoard.performMove(newMove);
 
-            int evalScore = calculateMove(newBoard, depth - 1, !whitePlays, steps, alpha, beta).score;
+            int evalScore = calculateMove(newBoard, depth - 1, !whitePlays, steps, swaps, alpha, beta).score;
 
             if (whitePlays) {
 
@@ -61,6 +94,10 @@ ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* 
                 move = move->next;
             } else break;
         }
+
+        if (searchIndex->next != nullptr) {
+            searchIndex = searchIndex->next;
+        } else break;
     }
 
     return bestMove;
@@ -71,7 +108,7 @@ int evaluateMoveScore(const ChessBoard& board)
     int whiteScore = 0;
     int blackScore = 0;
 
-    for (int i = 0; i < 64; i++) {
+    for (byte i = 0; i < 64; i++) {
         const ChessPiece& piece = board.board[i];
 
         if (piece.empty())

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "compatibility.h"
 #include "ChessPiece.h"
 #include "ChessMove.h"
 #include "LinkedList.h"
@@ -29,7 +30,10 @@ public:
 
     void printBoard() const;
     void performMove(const ChessMove& move);
-    LinkedList<int> possibleMoves(int index, bool whitePlays) const;
+    LinkedList<byte> possibleMoves(byte index, bool whitePlays) const;
     bool validMove(const ChessMove& move, bool whitePlays) const;
+
+    /// Return values: 0 = game not ended; 1 = white has won; 2 = black has won
+    byte gameEnded();
 };
 

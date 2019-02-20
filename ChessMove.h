@@ -5,14 +5,16 @@
 
 #pragma once
 
+#include "compatibility.h"
+
 struct ChessMove
 {
-    int from;
-    int to;
+    byte from;
+    byte to;
     int score;
 
     ChessMove(const char code[6]);
-    ChessMove(int from, int to);
+    ChessMove(byte from, byte to);
     ChessMove(int score);
 
     void printMove() const;

@@ -18,11 +18,13 @@ public:
 
     explicit LinkedList(T item);
 
-    ~LinkedList() = default;
-
-    void freeList();
+    ~LinkedList();
 
     void push(const T& item);
+
+    void swap(int a, int b);
+
+    LinkedList<T>* get(int i);
 
     void printList();
 
@@ -42,16 +44,10 @@ LinkedList<T>::LinkedList(T item) : value(item), next(nullptr), initialized(true
 {}
 
 template<typename T>
-void LinkedList<T>::freeList()
+LinkedList<T>::~LinkedList()
 {
-    LinkedList<T>* n = next;
-
-    while(n != nullptr)
-    {
-        LinkedList<T>* temp = n;
-        delete n;
-        n = temp->next;
-    }
+    if (this->next != nullptr)
+        delete this->next;
 }
 
 template<typename T>
@@ -73,6 +69,29 @@ void LinkedList<T>::push(const T& item)
     }
 
     tail->next = link;
+}
+
+template<typename T>
+LinkedList<T>* LinkedList<T>::get(int i)
+{
+    auto* result = this;
+    for(; i > 0; i--) {
+        if (result->next == nullptr) return nullptr;
+        result = result->next;
+    }
+
+    return result;
+}
+
+template<typename T>
+void LinkedList<T>::swap(int a, int b)
+{
+    auto* listA = get(a);
+    auto* listB = get(b);
+
+    T temp = listA->value;
+    listA->value = listB->value;
+    listB->value = temp;
 }
 
 template<typename T>

@@ -5,7 +5,9 @@
 
 #pragma once
 
-char toLowercase(const char sign);
+#include "compatibility.h"
+
+char toLowercase(char sign);
 
 struct ChessPiece
 {
@@ -14,7 +16,7 @@ struct ChessPiece
     // result must be at least 13 bytes long
     void name(char result[14]) const;
 
-    unsigned int value() const;
+    byte value() const;
     char kind() const;
     bool whiteOwns() const;
     bool empty() const;

@@ -29,7 +29,7 @@ ChessMove::ChessMove(const char* code)
     to = static_cast<unsigned char>(fieldToIndex(x2, y2));
 }
 
-ChessMove::ChessMove(int from, int to)
+ChessMove::ChessMove(byte from, byte to)
         : from(from), to(to)
 {}
 
