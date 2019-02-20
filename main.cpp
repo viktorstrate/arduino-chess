@@ -74,6 +74,7 @@ int userMove(bool& whitePlays, ChessBoard& board)
 
 void computerMove(bool& whitePlays, ChessBoard& board)
 {
+    println("Computer is thinking...");
     int steps = 0;
     ChessMove computerMove = calculateMove(board, 5, whitePlays, &steps);
 
