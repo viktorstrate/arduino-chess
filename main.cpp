@@ -107,9 +107,11 @@ int userMove(bool& whitePlays, ChessBoard& board)
 void computerMove(bool& whitePlays, ChessBoard& board, int depth)
 {
     println("Computer is thinking...");
-    int steps = 0;
-    int swaps = 0;
-    ChessMove computerMove = calculateMove(board, depth, whitePlays, &steps, &swaps);
+
+    ChessEngine engine;
+
+    ChessMove computerMove = engine.calculateMoveIterative(board, 120000, whitePlays);
+    //ChessMove computerMove = engine.calculateMove(board, depth, whitePlays);
 
     print("Computer moving ");
     char name[16];
@@ -120,9 +122,11 @@ void computerMove(bool& whitePlays, ChessBoard& board, int depth)
     print(" - With calculated score: ");
     println(computerMove.score);
     print(" - Total minimax calls: ");
-    println(steps);
+    println(engine.getSteps());
     print(" - Total minimax optimization swaps: ");
-    println(swaps);
+    println(engine.getSwaps());
+    print(" - Total transposition table size: ");
+    println(engine.getTransTableSize());
     println("");
     if (!board.board[computerMove.to].empty()) {
         print("Taking ");
@@ -142,7 +146,7 @@ void startGamePlayerComputer(int depth)
     while (true) {
 
         print("Current board score: ");
-        println(evaluateMoveScore(board));
+        println(ChessEngine::evaluateMoveScore(board));
 
         board.printBoard();
 
@@ -159,9 +163,9 @@ void startGamePlayerComputer(int depth)
         int endState = board.gameEnded();
         if (endState != 0) {
             if (endState == 1)
-                print("White");
-            else
                 print("Black");
+            else
+                print("White");
 
             println(" has won!");
             break;
@@ -184,7 +188,7 @@ void startGameComputerComputer(int depth)
         println(count);
 
         print("Current board score: ");
-        println(evaluateMoveScore(board));
+        println(ChessEngine::evaluateMoveScore(board));
 
         board.printBoard();
 
@@ -193,9 +197,9 @@ void startGameComputerComputer(int depth)
         int endState = board.gameEnded();
         if (endState != 0) {
             if (endState == 1)
-                print("White");
-            else
                 print("Black");
+            else
+                print("White");
 
             println(" has won!");
             break;

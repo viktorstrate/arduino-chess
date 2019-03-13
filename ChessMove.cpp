@@ -50,3 +50,6 @@ void ChessMove::printMove() const
 
 ChessMove::ChessMove(int score) : score(score), from(-1), to(-1)
 {}
+
+ChessMove::ChessMove(): score(0), from(-1), to(-1)
+{}

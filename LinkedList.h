@@ -30,7 +30,7 @@ public:
 
     bool contains(const T& item);
 
-    bool end();
+    bool end() const;
 
 private:
     bool initialized;
@@ -128,7 +128,7 @@ void LinkedList<T>::printList()
 }
 
 template<typename T>
-bool LinkedList<T>::end()
+bool LinkedList<T>::end() const
 {
     return !initialized;
 }

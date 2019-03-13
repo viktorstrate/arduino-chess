@@ -13,6 +13,8 @@ struct ChessMove
     byte to;
     int score;
 
+    ChessMove();
+
     ChessMove(const char code[6]);
     ChessMove(byte from, byte to);
     ChessMove(int score);

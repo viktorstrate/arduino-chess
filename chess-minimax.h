@@ -6,16 +6,42 @@
 
 #include "ChessBoard.h"
 #include "ChessMove.h"
+#include "LinkedList.h"
 
-/**
- * Calculate the best move on the board, for the given player
- * @param board the board to base the calculations on
- * @param depth how many moves into the future that should be calculated
- * @param whitePlays whether or not white plays next turn
- * @param alpha should be set to default, used for optimization
- * @param beta should be set to default, used for optimization
- * @return
- */
-ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* steps = nullptr, int* swaps = nullptr, int alpha = -10000, int beta = 10000);
+class ChessEngine {
+public:
+    ChessEngine();
 
-int evaluateMoveScore(const ChessBoard& board);
+    /**
+     * Calculate the best move on the board, for the given player
+     * @param board the board to base the calculations on
+     * @param depth how many moves into the future that should be calculated
+     * @param whitePlays whether or not white plays next turn
+     * @param alpha should be set to default, used for optimization
+     * @param beta should be set to default, used for optimization
+     * @return
+     */
+    ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int alpha = -10000, int beta = 10000);
+
+    ChessMove calculateMoveIterative(ChessBoard board, unsigned maxSteps, bool whitePlays);
+
+    static int evaluateMoveScore(const ChessBoard& board);
+
+    int getSteps() const;
+
+    int getSwaps() const;
+
+    int getTransTableSize() const;
+
+private:
+    struct TransTable {
+        ChessBoard board;
+        ChessMove move;
+    };
+
+    LinkedList<TransTable> transpositionTable;
+    int steps = 0;
+    int swaps = 0;
+    int maxSteps = -1;
+
+};

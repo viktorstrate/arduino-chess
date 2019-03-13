@@ -11,12 +11,46 @@ using namespace std;
 
 #include "chess-minimax.h"
 
-ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* steps, int* swaps, int alpha, int beta)
+ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxSteps, bool whitePlays)
 {
-    if(steps != nullptr)
-        *steps += 1;
+    this->maxSteps = maxSteps;
+    unsigned depth = 0;
+    ChessMove bestMove = ChessMove(whitePlays ? -10000 : 10000);
 
-    if (depth == 0) {
+    int lastTransSize = 0;
+
+    while (depth < 10) {
+
+        ChessMove move = calculateMove(board, depth, whitePlays);
+
+        if (whitePlays) {
+            if (move.score > bestMove.score)
+                bestMove = move;
+        } else if (move.score < bestMove.score)
+            bestMove = move;
+
+        print("Analyzed depth: ");
+        print(depth);
+        print(", transposition table increase: ");
+        int newTransSize = getTransTableSize();
+        println(newTransSize - lastTransSize);
+        lastTransSize = newTransSize;
+
+        depth++;
+    }
+
+    return bestMove;
+}
+
+ChessMove ChessEngine::calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int alpha, int beta)
+{
+    steps += 1;
+
+    if (steps % 1000 == 0) {
+        print(".");
+    }
+
+    if (depth == 0 || (maxSteps > 0 && steps >= maxSteps)) {
         ChessMove scoreMove = ChessMove(evaluateMoveScore(board));
         return scoreMove;
     }
@@ -37,7 +71,7 @@ ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* 
             const ChessPiece& piece = board.board[move->value];
 
             if (!piece.empty() && piece.whiteOwns() != whitePlays) {
-                if (swaps != nullptr) *swaps += 1; // for statistics
+                swaps += 1; // for statistics
                 searchOrder.swap(swappedPieces, move->value);
                 swappedPieces++;
             }
@@ -64,7 +98,35 @@ ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* 
             ChessMove newMove = ChessMove(i, move->value);
             newBoard.performMove(newMove);
 
-            int evalScore = calculateMove(newBoard, depth - 1, !whitePlays, steps, swaps, alpha, beta).score;
+            int evalScore = 0;
+            bool foundScore = false;
+
+            // Check if move is in transposition table
+            auto* tablePtr = &transpositionTable;
+            while (!tablePtr->end()) {
+
+                bool boardMatch = true;
+
+                for (int a = 0; a < 64; a++) {
+                    if (tablePtr->value.board.board[a].value() != newBoard.board[a].value()) {
+                        boardMatch = false;
+                        break;
+                    }
+                }
+
+                if (boardMatch) {
+                    evalScore = tablePtr->value.move.score;
+                    foundScore = true;
+                    break;
+                }
+
+                if (tablePtr->next != nullptr)
+                    tablePtr = tablePtr->next;
+                else break;
+            }
+
+            if (!foundScore)
+                evalScore = calculateMove(newBoard, depth - 1, !whitePlays, alpha, beta).score;
 
             if (whitePlays) {
 
@@ -100,10 +162,16 @@ ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int* 
         } else break;
     }
 
+    TransTable table = {
+        board, bestMove
+    };
+
+    transpositionTable.push(table);
+
     return bestMove;
 }
 
-int evaluateMoveScore(const ChessBoard& board)
+int ChessEngine::evaluateMoveScore(const ChessBoard& board)
 {
     int whiteScore = 0;
     int blackScore = 0;
@@ -146,4 +214,31 @@ int evaluateMoveScore(const ChessBoard& board)
     }
 
     return whiteScore - blackScore;
+}
+
+ChessEngine::ChessEngine() : transpositionTable()
+{}
+
+int ChessEngine::getTransTableSize() const
+{
+    int count = 0;
+    auto* transPtr = &transpositionTable;
+    while (!transPtr->end()) {
+        count++;
+
+        if (transPtr->next == nullptr) break;
+        transPtr = transPtr->next;
+    }
+
+    return count;
+}
+
+int ChessEngine::getSteps() const
+{
+    return steps;
+}
+
+int ChessEngine::getSwaps() const
+{
+    return swaps;
 }
