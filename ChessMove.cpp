@@ -45,7 +45,7 @@ void ChessMove::printMove() const
             x1, y1, ' ', '-', '>', ' ', x2, y2, '\0'
     };
 
-    println(buffer);
+    Println(buffer);
 }
 
 ChessMove::ChessMove(int score) : score(score), from(-1), to(-1)

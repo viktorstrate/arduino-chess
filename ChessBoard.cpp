@@ -12,21 +12,21 @@ void ChessBoard::printBoard() const
 
     for (int y = 7; y >= 0; y--) {
         if (y == 7) {
-            print("   ");
+            Print("   ");
             for (int x = 0; x < 8; x++) {
                 char buffer[] = {
                         static_cast<char>('a' + x), ' ', '\0'
                 };
-                print(buffer);
+                Print(buffer);
             }
-            println("");
+            Println("");
         }
 
         {
             char buffer[] = {
                     static_cast<char>('1' + y), ' ', '|', '\0'
             };
-            print(buffer);
+            Print(buffer);
         }
 
         for (int x = 0; x < 8; x++) {
@@ -35,29 +35,29 @@ void ChessBoard::printBoard() const
             char buffer[] = {
                     piece->key, '|', '\0'
             };
-            print(buffer);
+            Print(buffer);
         }
 
         {
             char buffer[] = {
                     ' ', static_cast<char>('1' + y), '\n', '\0'
             };
-            print(buffer);
+            Print(buffer);
         }
 
         if (y == 0) {
-            print("   ");
+            Print("   ");
             for (int x = 0; x < 8; x++) {
                 char buffer[] = {
                         static_cast<char>('a' + x), ' ', '\0'
                 };
-                print(buffer);
+                Print(buffer);
             }
-            println("");
+            Println("");
         }
     }
 
-    println("");
+    Println("");
 }
 
 void ChessBoard::performMove(const ChessMove& move)

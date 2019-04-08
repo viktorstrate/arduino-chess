@@ -16,14 +16,16 @@ void setup() {
 void loop() {
 
   print("Current board score: ");
-  println(evaluateMoveScore(board));
+  println(ChessEngine::evaluateMoveScore(board));
 
   board.printBoard();
 
   println("Computer is thinking...");
   int steps = 0;
   int swaps = 0;
-  ChessMove computerMove = calculateMove(board, DEPTH, whitePlays, &steps, &swaps);
+
+  ChessEngine engine;
+  ChessMove computerMove = engine.calculateMoveIterative(board, 10, whitePlays);
 
   print("Computer moving ");
   char name[16];

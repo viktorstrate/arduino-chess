@@ -7,17 +7,17 @@
 #ifdef DESKTOP
 #include <iostream>
 #else
-#include <arduino.h>
+#include <Arduino.h>
 #endif
 
 #ifdef DESKTOP
-#define print(message) std::cout << message
+#define Print(message) std::cout << message
 #else
-#define print(message) Serial.print(message)
+#define Print(message) Serial.print(message)
 #endif
 
 #ifdef DESKTOP
-#define println(message) std::cout << message << std::endl
+#define Println(message) std::cout << message << std::endl
 #else
-#define println(message) Serial.println(message)
+#define Println(message) Serial.println(message)
 #endif

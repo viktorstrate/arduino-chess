@@ -29,11 +29,11 @@ ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxStep
         } else if (move.score < bestMove.score)
             bestMove = move;
 
-        print("Analyzed depth: ");
-        print(depth);
-        print(", transposition table increase: ");
+        Print("Analyzed depth: ");
+        Print(depth);
+        Print(", transposition table increase: ");
         int newTransSize = getTransTableSize();
-        println(newTransSize - lastTransSize);
+        Println(newTransSize - lastTransSize);
         lastTransSize = newTransSize;
 
         depth++;
@@ -47,7 +47,7 @@ ChessMove ChessEngine::calculateMove(ChessBoard board, unsigned depth, bool whit
     steps += 1;
 
     if (steps % 1000 == 0) {
-        print(".");
+        Print(".");
     }
 
     if (depth == 0 || (maxSteps > 0 && steps >= maxSteps)) {

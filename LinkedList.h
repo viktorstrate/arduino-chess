@@ -111,18 +111,18 @@ template<typename T>
 void LinkedList<T>::printList()
 {
     if (!initialized) {
-        println(";");
+        Println(";");
         return;
     }
 
-    print(value);
+    Print(value);
 
     if (next == nullptr) {
-        println("");
+        Println("");
         return;
     }
 
-    print(", ");
+    Print(", ");
 
     next->printList();
 }
