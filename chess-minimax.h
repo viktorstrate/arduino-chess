@@ -21,7 +21,7 @@ public:
      * @param beta should be set to default, used for optimization
      * @return
      */
-    ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int alpha = -10000, int beta = 10000);
+    ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int alpha = -10000, int beta = 10000, int currentDepth = 0);
 
     ChessMove calculateMoveIterative(ChessBoard board, unsigned maxSteps, bool whitePlays);
 
@@ -33,15 +33,21 @@ public:
 
     int getTransTableSize() const;
 
+    int getTransTableUses() const;
+
 private:
     struct TransTable {
         ChessBoard board;
         ChessMove move;
+        int depth;
     };
 
     LinkedList<TransTable> transpositionTable;
     int steps = 0;
     int swaps = 0;
     int maxSteps = -1;
+    int tableUses = 0;
+
+    const TransTable* transTableFind(const ChessBoard* board);
 
 };

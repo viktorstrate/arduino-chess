@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <cstring>
 
-void startGamePlayerComputer(int depth);
-void startGameComputerComputer(int depth);
+void startGamePlayerComputer(int depth, int maxSteps);
+void startGameComputerComputer(int depth, int maxSteps);
 
 int main(int argc, char** argv)
 {
@@ -17,7 +17,8 @@ int main(int argc, char** argv)
     Println("Moves are written like 'e2 e4'");
 
     int mode = 0;
-    int depth = 4;
+    int depth = 8;
+    int maxSteps = 100000;
 
     for(int i = 1; i < argc; i++){
         if (strncmp(argv[i], "-c", 3) == 0) {
@@ -29,20 +30,28 @@ int main(int argc, char** argv)
             depth = std::stoi(argv[i+1]);
             continue;
         }
+
+        if (strncmp(argv[i], "-s", 3) == 0) {
+            maxSteps = std::stoi(argv[i+1]);
+            continue;
+        }
     }
 
     Print("Depth set to: ");
     Println(depth);
 
+    Print("Max steps set to: ");
+    Println(maxSteps);
+
     Println("");
 
     switch(mode) {
         case 1: {
-            startGameComputerComputer(depth);
+            startGameComputerComputer(depth, maxSteps);
             break;
         }
         default: {
-            startGamePlayerComputer(depth);
+            startGamePlayerComputer(depth, maxSteps);
             break;
         }
     }
@@ -104,13 +113,13 @@ int userMove(bool& whitePlays, ChessBoard& board)
     return 0;
 }
 
-void computerMove(bool& whitePlays, ChessBoard& board, int depth)
+void computerMove(bool& whitePlays, ChessBoard& board, int depth, int maxSteps)
 {
     Println("Computer is thinking...");
 
     ChessEngine engine;
 
-    ChessMove computerMove = engine.calculateMoveIterative(board, 120000, whitePlays);
+    ChessMove computerMove = engine.calculateMoveIterative(board, maxSteps, whitePlays);
     //ChessMove computerMove = engine.calculateMove(board, depth, whitePlays);
 
     Print("Computer moving ");
@@ -127,6 +136,8 @@ void computerMove(bool& whitePlays, ChessBoard& board, int depth)
     Println(engine.getSwaps());
     Print(" - Total transposition table size: ");
     Println(engine.getTransTableSize());
+    Print(" - Total transposition table uses: ");
+    Println(engine.getTransTableUses());
     Println("");
     if (!board.board[computerMove.to].empty()) {
         Print("Taking ");
@@ -138,7 +149,7 @@ void computerMove(bool& whitePlays, ChessBoard& board, int depth)
     whitePlays = !whitePlays;
 }
 
-void startGamePlayerComputer(int depth)
+void startGamePlayerComputer(int depth, int maxSteps)
 {
     ChessBoard board;
     bool whitePlays = true;
@@ -151,7 +162,7 @@ void startGamePlayerComputer(int depth)
         board.printBoard();
 
         if (!whitePlays) {
-            computerMove(whitePlays, board, depth);
+            computerMove(whitePlays, board, depth, maxSteps);
             continue;
         }
 
@@ -173,7 +184,7 @@ void startGamePlayerComputer(int depth)
     }
 }
 
-void startGameComputerComputer(int depth)
+void startGameComputerComputer(int depth, int maxSteps)
 {
     ChessBoard board;
     bool whitePlays = true;
@@ -192,7 +203,7 @@ void startGameComputerComputer(int depth)
 
         board.printBoard();
 
-        computerMove(whitePlays, board, depth);
+        computerMove(whitePlays, board, depth, maxSteps);
 
         int endState = board.gameEnded();
         if (endState != 0) {
