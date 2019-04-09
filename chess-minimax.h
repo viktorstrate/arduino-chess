@@ -21,9 +21,9 @@ public:
      * @param beta should be set to default, used for optimization
      * @return
      */
-    ChessMove calculateMove(ChessBoard board, unsigned depth, bool whitePlays, int alpha = -10000, int beta = 10000, int currentDepth = 0);
+    ChessMove calculateMove(ChessBoard board, unsigned depth, int alpha = -10000, int beta = 10000, int currentDepth = 0);
 
-    ChessMove calculateMoveIterative(ChessBoard board, unsigned maxSteps, bool whitePlays);
+    ChessMove calculateMoveIterative(ChessBoard board, unsigned maxSteps);
 
     static int evaluateMoveScore(const ChessBoard& board);
 

@@ -61,10 +61,10 @@ int main(int argc, char** argv)
     return 0;
 }
 
-int userMove(bool& whitePlays, ChessBoard& board)
+int userMove(ChessBoard& board)
 {
 
-    if (whitePlays)
+    if (board.whitePlays)
         Print("White");
     else
         Print("Black");
@@ -78,7 +78,7 @@ int userMove(bool& whitePlays, ChessBoard& board)
     if (strlen(buffer) == 3) {
         Print("Possible moves: ");
         ChessMove move = ChessMove(buffer);
-        board.possibleMoves(move.from, whitePlays).printList();
+        board.possibleMoves(move.from).printList();
         Println("");
         return 1;
     }
@@ -87,7 +87,7 @@ int userMove(bool& whitePlays, ChessBoard& board)
 
     ChessMove move(buffer);
 
-    if (board.validMove(move, whitePlays)) {
+    if (board.validMove(move)) {
         Print("Moving ");
         char name[16];
         board.board[move.from].name(name);
@@ -104,7 +104,6 @@ int userMove(bool& whitePlays, ChessBoard& board)
         Println("");
 
         board.performMove(move);
-        whitePlays = !whitePlays;
     } else {
         Println("Invalid move try again");
         return 1;
@@ -113,13 +112,13 @@ int userMove(bool& whitePlays, ChessBoard& board)
     return 0;
 }
 
-void computerMove(bool& whitePlays, ChessBoard& board, int depth, int maxSteps)
+void computerMove(ChessBoard& board, int depth, int maxSteps)
 {
     Println("Computer is thinking...");
 
     ChessEngine engine;
 
-    ChessMove computerMove = engine.calculateMoveIterative(board, maxSteps, whitePlays);
+    ChessMove computerMove = engine.calculateMoveIterative(board, maxSteps);
     //ChessMove computerMove = engine.calculateMove(board, depth, whitePlays);
 
     Print("Computer moving ");
@@ -146,13 +145,11 @@ void computerMove(bool& whitePlays, ChessBoard& board, int depth, int maxSteps)
     }
 
     board.performMove(computerMove);
-    whitePlays = !whitePlays;
 }
 
 void startGamePlayerComputer(int depth, int maxSteps)
 {
     ChessBoard board;
-    bool whitePlays = true;
 
     while (true) {
 
@@ -161,13 +158,13 @@ void startGamePlayerComputer(int depth, int maxSteps)
 
         board.printBoard();
 
-        if (!whitePlays) {
-            computerMove(whitePlays, board, depth, maxSteps);
+        if (!board.whitePlays) {
+            computerMove(board, depth, maxSteps);
             continue;
         }
 
         int status;
-        status = userMove(whitePlays, board);
+        status = userMove(board);
         if (status == 1) continue;
         if (status == 2) break;
 
@@ -187,7 +184,6 @@ void startGamePlayerComputer(int depth, int maxSteps)
 void startGameComputerComputer(int depth, int maxSteps)
 {
     ChessBoard board;
-    bool whitePlays = true;
 
     int count = 0;
 
@@ -203,7 +199,7 @@ void startGameComputerComputer(int depth, int maxSteps)
 
         board.printBoard();
 
-        computerMove(whitePlays, board, depth, maxSteps);
+        computerMove(board, depth, maxSteps);
 
         int endState = board.gameEnded();
         if (endState != 0) {

@@ -28,10 +28,13 @@ public:
             'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
     };
 
+    bool whitePlays = true;
+
     void printBoard() const;
     void performMove(const ChessMove& move);
+    LinkedList<byte> possibleMoves(byte index) const;
     LinkedList<byte> possibleMoves(byte index, bool whitePlays) const;
-    bool validMove(const ChessMove& move, bool whitePlays) const;
+    bool validMove(const ChessMove& move) const;
 
     /// Return values: 0 = game not ended; 1 = white has won; 2 = black has won
     byte gameEnded();

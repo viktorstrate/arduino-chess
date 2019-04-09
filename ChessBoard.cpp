@@ -64,6 +64,7 @@ void ChessBoard::performMove(const ChessMove& move)
 {
     board[move.to] = board[move.from];
     board[move.from] = ' ';
+    this->whitePlays = !this->whitePlays;
 }
 
 LinkedList<byte> ChessBoard::possibleMoves(byte index, bool whitePlays) const
@@ -187,9 +188,14 @@ LinkedList<byte> ChessBoard::possibleMoves(byte index, bool whitePlays) const
     return result;
 }
 
-bool ChessBoard::validMove(const ChessMove& move, bool whitePlays) const
+LinkedList<byte> ChessBoard::possibleMoves(byte index) const
 {
-    LinkedList<byte> moves = this->possibleMoves(move.from, whitePlays);
+    return this->possibleMoves(index, this->whitePlays);
+}
+
+bool ChessBoard::validMove(const ChessMove& move) const
+{
+    LinkedList<byte> moves = this->possibleMoves(move.from);
 
     return moves.contains(move.to);
 }

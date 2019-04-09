@@ -9,15 +9,15 @@ using namespace std;
 
 #include "chess-minimax.h"
 
-ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxSteps, bool whitePlays)
+ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxSteps)
 {
     this->maxSteps = maxSteps;
     unsigned depth = 1;
-    ChessMove move = ChessMove(whitePlays ? -10000 : 10000);
+    ChessMove move = ChessMove(board.whitePlays ? -10000 : 10000);
 
     while (depth < 10) {
 
-        ChessMove newMove = calculateMove(board, depth, whitePlays);
+        ChessMove newMove = calculateMove(board, depth);
 
         // Discard half calculated moves
         if (steps >= maxSteps) {
@@ -41,8 +41,6 @@ ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxStep
 
         newMove.printMove();
 
-        Println("");
-
         this->transpositionTable = LinkedList<TransTable>();
 
         move = newMove;
@@ -52,13 +50,13 @@ ChessMove ChessEngine::calculateMoveIterative(ChessBoard board, unsigned maxStep
     return move;
 }
 
-ChessMove ChessEngine::calculateMove(ChessBoard board, const unsigned depth, bool whitePlays, int alpha, int beta, int currentDepth)
+ChessMove ChessEngine::calculateMove(ChessBoard board, const unsigned depth, int alpha, int beta, int currentDepth)
 {
     steps += 1;
 
-    if (steps % 1000 == 0) {
+    /*if (steps % 1000 == 0) {
         Print(".");
-    }
+    }*/
 
     if (currentDepth >= depth || (maxSteps > 0 && steps >= maxSteps)) {
         ChessMove scoreMove = ChessMove(evaluateMoveScore(board));
@@ -73,14 +71,14 @@ ChessMove ChessEngine::calculateMove(ChessBoard board, const unsigned depth, boo
         searchOrder.push(i);
 
     for (byte i = 0; i < 64; i++) {
-        auto sortPieceMoves = board.possibleMoves(i, whitePlays);
+        auto sortPieceMoves = board.possibleMoves(i);
         auto* move = &sortPieceMoves;
 
         while(!move->end())
         {
             const ChessPiece& piece = board.board[move->value];
 
-            if (!piece.empty() && piece.whiteOwns() != whitePlays) {
+            if (!piece.empty() && piece.whiteOwns() != board.whitePlays) {
                 swaps += 1; // for statistics
                 searchOrder.swap(swappedPieces, move->value);
                 swappedPieces++;
@@ -95,11 +93,11 @@ ChessMove ChessEngine::calculateMove(ChessBoard board, const unsigned depth, boo
 
     // Explore every move
     auto* searchIndex = &searchOrder;
-    ChessMove bestMove = ChessMove(whitePlays ? -10000 : 10000);
+    ChessMove bestMove = ChessMove(board.whitePlays ? -10000 : 10000);
 
     while(!searchIndex->end()) {
         byte i = searchIndex->value;
-        auto possibleMoves = board.possibleMoves(i, whitePlays);
+        auto possibleMoves = board.possibleMoves(i);
 
         auto* move = &possibleMoves;
 
@@ -116,11 +114,11 @@ ChessMove ChessEngine::calculateMove(ChessBoard board, const unsigned depth, boo
             //    tableUses++;
             //    evalScore = tableResult->move.score;
             //} else {
-                evalScore = calculateMove(newBoard, depth, !whitePlays, alpha, beta, currentDepth+1).score;
+                evalScore = calculateMove(newBoard, depth, alpha, beta, currentDepth+1).score;
             //}
 
 
-            if (whitePlays) {
+            if (board.whitePlays) {
 
                 if (evalScore > bestMove.score){
                     newMove.score = evalScore;
